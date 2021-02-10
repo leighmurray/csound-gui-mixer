@@ -14,11 +14,12 @@ kSpeed  init     1           ; playback speed
 iSkip   init     0           ; inskip into file (in seconds)
 iLoop   init     0           ; looping switch (0=off 1=on)
 kcf chnget "cf"
+kamp chnget "amp"
 ; read audio from disk using diskin2 opcode
 a1, a2      diskin2  "audiofile.wav", kSpeed, iSkip, iLoop
 a1          moogvcf   a1, kcf, 0.8
 a2          moogvcf   a1, kcf, 0.8
-        out      a1, a2          ; send audio to outputs
+        out      a1*kamp, a2*kamp          ; send audio to outputs
   endin
 </CsInstruments>
 

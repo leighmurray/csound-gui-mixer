@@ -6,7 +6,6 @@ function moduleDidLoad() {
 
     SetParam("amp", '', 1000., 0.);
     SetParam("cf", 'Hz', 1., 0.);
-    SetParam("freq", 'Hz', 1., 440.);
     attachListeners();
     window.addEventListener("unload", function(e) {
         if (csound != null)
@@ -18,7 +17,6 @@ function moduleDidLoad() {
 function attachListeners() {
     document.getElementById('playButton').addEventListener('click', togglePlay);
     document.getElementById('files').addEventListener('change', handleFileSelect, false);
-    document.getElementById("freq").addEventListener("input", SetFreq);
     document.getElementById("amp").addEventListener("input", SetAmp);
     document.getElementById("cf").addEventListener("input", SetCf);
 }
@@ -38,11 +36,6 @@ function print_msg(message) {
 // set amplitude
 function SetAmp() {
     SetParam('amp', '', 1000., 0.0);
-}
-
-// set fundamental
-function SetFreq() {
-    SetParam('freq', 'Hz', 1., 440.);
 }
 
 // set centre frequency
@@ -112,7 +105,3 @@ function handleFileSelect(evt) {
         csound.UpdateStatus("to load a new file, first refresh page!")
     }
 }
-
-// CsoundObj.initialize().then(() => {
-//     moduleDidLoad();
-// });
