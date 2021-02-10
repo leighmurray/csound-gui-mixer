@@ -1,0 +1,118 @@
+// called by csound.js
+function moduleDidLoad() {
+    clear_console();
+    console.log = print_msg;
+    console.warn = print_msg;
+
+    SetParam("amp", '', 1000., 0.);
+    SetParam("cf", 'Hz', 1., 0.);
+    SetParam("freq", 'Hz', 1., 440.);
+    attachListeners();
+    window.addEventListener("unload", function(e) {
+        if (csound != null)
+        csound.destroy();
+    }, false);
+}
+
+// attach callbacks to sliders
+function attachListeners() {
+    document.getElementById('playButton').addEventListener('click', togglePlay);
+    document.getElementById('files').addEventListener('change', handleFileSelect, false);
+    document.getElementById("freq").addEventListener("input", SetFreq);
+    document.getElementById("amp").addEventListener("input", SetAmp);
+    document.getElementById("cf").addEventListener("input", SetCf);
+}
+
+
+function print_msg(message) {
+    var element = document.getElementById('console');
+    element.value += (message + "\n");
+    element.scrollTop = 99999; // focus on bottom
+    count += 1;
+    if (count == 1000) {
+        clear_console();
+        count = 0;
+    }
+}
+
+// set amplitude
+function SetAmp() {
+    SetParam('amp', '', 1000., 0.0);
+}
+
+// set fundamental
+function SetFreq() {
+    SetParam('freq', 'Hz', 1., 440.);
+}
+
+// set centre frequency
+function SetCf() {
+    SetParam('cf', 'Hz', 1., 0.);
+}
+
+// set parameter
+function SetParam(name, label, scal, off) {
+    var val = document.getElementById(name).value / scal + off;
+    csound.SetChannel(name, val);
+    console.log(name + ": " + val + " " + label);
+}
+function clear_console() {
+    var element = document.getElementById('console');
+    element.value = ' ';
+}
+
+var count = 0;
+
+function handleMessage(message) {
+    var element = document.getElementById('console');
+    element.value += message;
+    count += 1;
+    if (count == 1000) {
+        element.value = ' ';
+        count = 0;
+    }
+}
+
+var playing = false;
+var started = false;
+var loaded = false;
+
+function togglePlay() {
+    console.log("toggle play");
+    if (loaded) {
+        if (!playing) {
+            console.log("playing");
+            if (started) csound.Play();
+            else {
+                CsoundObj.CSOUND_AUDIO_CONTEXT.resume();
+                csound.PlayCsd("gmwav.csd");
+                started = true;
+            }
+            document.getElementById('playButton').innerText = "Pause";
+            playing = true;
+        } else {
+            console.log("pausing");
+            csound.Pause()
+            document.getElementById('playButton').innerText = "Play";
+            playing = false;
+        }
+    }
+}
+
+function handleFileSelect(evt) {
+    if (!loaded) {
+        var files = evt.target.files;
+        var f = files[0];
+        var objectURL = window.URL.createObjectURL(f);
+        csound.CopyUrlToLocal(objectURL, "audiofile.wav", function() {
+            loaded = true;
+            console.log("Ready to play. \n");
+        });
+    } else {
+        csound.UpdateStatus("to load a new file, first refresh page!")
+    }
+}
+
+// CsoundObj.initialize().then(() => {
+//     moduleDidLoad();
+// });
