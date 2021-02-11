@@ -4,8 +4,9 @@ function moduleDidLoad() {
     console.log = print_msg;
     console.warn = print_msg;
 
-    SetParam("amp", '', 1000., 0.);
-    SetParam("cf", 'Hz', 1., 0.);
+    SetAmp();
+    SetCf();
+    SetReverb(); 
     attachListeners();
     window.addEventListener("unload", function(e) {
         if (csound != null)
@@ -19,6 +20,7 @@ function attachListeners() {
     document.getElementById('files').addEventListener('change', handleFileSelect, false);
     document.getElementById("amp").addEventListener("input", SetAmp);
     document.getElementById("cf").addEventListener("input", SetCf);
+    document.getElementById("reverb").addEventListener("input", SetReverb);
 }
 
 
@@ -41,6 +43,11 @@ function SetAmp() {
 // set centre frequency
 function SetCf() {
     SetParam('cf', 'Hz', 1., 0.);
+}
+
+function SetReverb() {
+    // Value for reverb is in seconds
+    SetParam("reverb", "seconds", 1000., 0.);
 }
 
 // set parameter
