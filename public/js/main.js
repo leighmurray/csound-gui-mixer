@@ -149,6 +149,22 @@ function loadTrack() {
             loaded = true;
             console.log("Ready to play. \n");
         });
+        csound.CopyUrlToLocal("/audio/track02.wav", "track02.wav", function() {
+            loaded = true;
+            console.log("Ready to play. \n");
+        });
+        csound.CopyUrlToLocal("/audio/track03.wav", "track03.wav", function() {
+            loaded = true;
+            console.log("Ready to play. \n");
+        });
+        csound.CopyUrlToLocal("/audio/track04.wav", "track04.wav", function() {
+            loaded = true;
+            console.log("Ready to play. \n");
+        });
+        csound.CopyUrlToLocal("/audio/track05.wav", "track05.wav", function() {
+            loaded = true;
+            console.log("Ready to play. \n");
+        });
     } else {
         csound.UpdateStatus("to load a new file, first refresh page!")
     }
