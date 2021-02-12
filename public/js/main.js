@@ -10,6 +10,8 @@ function moduleDidLoad() {
     SetResonatorFreq();
     SetResonatorEnabled();
     SetReverbEnabled();
+    SetCutoffEnabled();
+
     attachListeners();
     window.addEventListener("unload", function(e) {
         if (csound != null)
@@ -27,6 +29,7 @@ function attachListeners() {
     document.getElementById("resonatorFreq").addEventListener("input", SetResonatorFreq);
     document.getElementById("resonatorEnabled").addEventListener("input", SetResonatorEnabled);
     document.getElementById("reverbEnabled").addEventListener("input", SetReverbEnabled);
+    document.getElementById("cutoffEnabled").addEventListener("input", SetCutoffEnabled);
 }
 
 
@@ -63,16 +66,22 @@ function SetResonatorFreq() {
     SetParam("resonatorFreq", "Hz", 1., 0.);
 }
 
-// checkbox for string resonator
-function SetResonatorEnabled() {
-    // enable string resonator based on fundamental frequency
-    SetCheckboxParam("resonatorEnabled", "Resonator Enabled");
+// checkbox for cutoff freq
+function SetCutoffEnabled() {
+    // enable emulation of the Moog diode ladder filter
+    SetCheckboxParam("cutoffEnabled", "Cutoff Enabled");
 }
 
 // checkbox for reverberation
 function SetReverbEnabled() {
     // enable reverberation in a "natural room"
     SetCheckboxParam("reverbEnabled", "Reverb Enabled");
+}
+
+// checkbox for string resonator
+function SetResonatorEnabled() {
+    // enable string resonator based on fundamental frequency
+    SetCheckboxParam("resonatorEnabled", "Resonator Enabled");
 }
 
 // set checkbox parameter
