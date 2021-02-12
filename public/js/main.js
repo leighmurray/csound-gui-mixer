@@ -61,11 +61,18 @@ function SetResonatorFreq() {
     SetParam("resonatorFreq", "Hz", 1., 0.);
 }
 
-
 function SetResonatorEnabled() {
     // enable string resonator based on fundamental frequency
-    SetParam("resonatorEnabled", "", 1., 0.);
+    SetCheckboxParam("resonatorEnabled", "Resonator Enabled");
 }
+
+// set parameter
+function SetCheckboxParam(name, label) {
+    var val = document.getElementById(name).checked;
+    csound.SetChannel(name, val);
+    console.log(name + ": " + val);
+}
+
 
 // set parameter
 function SetParam(name, label, scal, off) {
@@ -73,6 +80,7 @@ function SetParam(name, label, scal, off) {
     csound.SetChannel(name, val);
     console.log(name + ": " + val + " " + label);
 }
+
 function clear_console() {
     var element = document.getElementById('console');
     element.value = ' ';
