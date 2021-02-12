@@ -9,6 +9,7 @@ function moduleDidLoad() {
     SetReverb(); 
     SetResonatorFreq();
     SetResonatorEnabled();
+    SetReverbEnabled();
     attachListeners();
     window.addEventListener("unload", function(e) {
         if (csound != null)
@@ -25,6 +26,7 @@ function attachListeners() {
     document.getElementById("reverb").addEventListener("input", SetReverb);
     document.getElementById("resonatorFreq").addEventListener("input", SetResonatorFreq);
     document.getElementById("resonatorEnabled").addEventListener("input", SetResonatorEnabled);
+    document.getElementById("reverbEnabled").addEventListener("input", SetReverbEnabled);
 }
 
 
@@ -61,18 +63,24 @@ function SetResonatorFreq() {
     SetParam("resonatorFreq", "Hz", 1., 0.);
 }
 
+// checkbox for string resonator
 function SetResonatorEnabled() {
     // enable string resonator based on fundamental frequency
     SetCheckboxParam("resonatorEnabled", "Resonator Enabled");
 }
 
-// set parameter
+// checkbox for reverberation
+function SetReverbEnabled() {
+    // enable reverberation in a "natural room"
+    SetCheckboxParam("reverbEnabled", "Reverb Enabled");
+}
+
+// set checkbox parameter
 function SetCheckboxParam(name, label) {
     var val = document.getElementById(name).checked;
     csound.SetChannel(name, val);
     console.log(name + ": " + val);
 }
-
 
 // set parameter
 function SetParam(name, label, scal, off) {
