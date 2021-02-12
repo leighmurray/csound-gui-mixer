@@ -64,7 +64,7 @@ a2          clip a2, 0, 0.9
 
 krms    rms a1 
         chnset  krms, "rms1"
-        
+
         outs    a1,a2      ; send audio to outputs
 endin
 
@@ -103,6 +103,7 @@ ifdbgain = 0.90        ; feedback gain (0 and 1) of the internal delay line
 a1, a2      diskin2  "track05.wav", kSpeed, iSkip, iLoop
         outs    a1* 0.15,a2* 0.15      ; send audio to outputs
 endin
+</CsInstruments>
 
 <CsScore>
 i1 0 36000;
