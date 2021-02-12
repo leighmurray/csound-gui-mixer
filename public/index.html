@@ -32,6 +32,10 @@
           <input type="checkbox" name="resonatorEnabled" id="resonatorEnabled"> Enable String Resonator</p>    
       <p>
           <input type="range" name="resonatorFreq" id="resonatorFreq" step="10" value="20" min="20" max="1000"> String Resonator Frequency</p>    
+      <p>
+          <input type="checkbox" name="feedbackEnabled" id="feedbackEnabled"> Enable Feedback (for the delay)</p> 
+      <p>
+          <input type="range" name="feedbackRatio" id="feedbackRatio" step="1" value="70" min="0" max="100">Feedback Ratio for delay buffer</p>
   </div>
     <textarea class="console" cols="65" rows="20" id="console">
       Csound: not loaded</textarea>

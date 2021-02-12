@@ -8,9 +8,12 @@ function moduleDidLoad() {
     SetCf();
     SetReverb(); 
     SetResonatorFreq();
+    SetFeedbackRatio();
+
     SetResonatorEnabled();
     SetReverbEnabled();
     SetCutoffEnabled();
+    SetFeedbackEnabled();
 
     attachListeners();
     loadTrack();
@@ -28,9 +31,11 @@ function attachListeners() {
     document.getElementById("cf").addEventListener("input", SetCf);
     document.getElementById("reverb").addEventListener("input", SetReverb);
     document.getElementById("resonatorFreq").addEventListener("input", SetResonatorFreq);
+    document.getElementById("feedbackRatio").addEventListener("input", SetFeedbackRatio);
     document.getElementById("resonatorEnabled").addEventListener("input", SetResonatorEnabled);
     document.getElementById("reverbEnabled").addEventListener("input", SetReverbEnabled);
     document.getElementById("cutoffEnabled").addEventListener("input", SetCutoffEnabled);
+    document.getElementById("feedbackEnabled").addEventListener("input", SetFeedbackEnabled);
 }
 
 
@@ -67,6 +72,12 @@ function SetResonatorFreq() {
     SetParam("resonatorFreq", "Hz", 1., 0.);
 }
 
+// set the feedback ratio
+function SetFeedbackRatio() {
+    // feedback ratio for delay buffer
+    SetParam("feedbackRatio", "percent", 100., 0.);
+}
+
 // checkbox for cutoff freq
 function SetCutoffEnabled() {
     // enable emulation of the Moog diode ladder filter
@@ -83,6 +94,12 @@ function SetReverbEnabled() {
 function SetResonatorEnabled() {
     // enable string resonator based on fundamental frequency
     SetCheckboxParam("resonatorEnabled", "Resonator Enabled");
+}
+
+// checkbox for feedback (delay)
+function SetFeedbackEnabled() {
+    // enable feedback for delay
+    SetCheckboxParam("feedbackEnabled", "Feedback Ratio Enabled");
 }
 
 // set checkbox parameter
