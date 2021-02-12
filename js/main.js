@@ -8,6 +8,7 @@ function moduleDidLoad() {
     SetCf();
     SetReverb(); 
     SetResonatorFreq();
+    SetResonatorEnabled();
     attachListeners();
     window.addEventListener("unload", function(e) {
         if (csound != null)
@@ -23,6 +24,7 @@ function attachListeners() {
     document.getElementById("cf").addEventListener("input", SetCf);
     document.getElementById("reverb").addEventListener("input", SetReverb);
     document.getElementById("resonatorFreq").addEventListener("input", SetResonatorFreq);
+    document.getElementById("resonatorEnabled").addEventListener("input", SetResonatorEnabled);
 }
 
 
@@ -47,14 +49,22 @@ function SetCf() {
     SetParam('cf', 'Hz', 1., 0.);
 }
 
+// set reverb 
 function SetReverb() {
     // Value for reverb is in seconds
     SetParam("reverb", "seconds", 1000., 0.);
 }
 
+// set the resonating frequency for the string resonator
 function SetResonatorFreq() {
     // String resonator based on fundamental frequency
     SetParam("resonatorFreq", "Hz", 1., 0.);
+}
+
+
+function SetResonatorEnabled() {
+    // enable string resonator based on fundamental frequency
+    SetParam("resonatorEnabled", "", 1., 0.);
 }
 
 // set parameter
