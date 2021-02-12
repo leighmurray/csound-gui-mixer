@@ -20,10 +20,12 @@ kcf chnget "cf"
 kamp chnget "amp"
 kreverbTime chnget "reverb"
 kresonatorFreq chnget "resonatorFreq"
+kfeedbackRatio chnget "feedbackRatio"
 
 kresonatorEnabled chnget "resonatorEnabled"
 kreverbEnabled chnget "reverbEnabled"
 kcutoffEnabled chnget "cutoffEnabled"
+kfeedbackEnabled chnget "feedbackEnabled"
 
 
 ; read audio from disk using diskin2 opcode
@@ -44,6 +46,16 @@ a1, a2      diskin2  "audiofile.wav", kSpeed, iSkip, iLoop
     a2          streson a2, kresonatorFreq, ifdbgain
   endif
 
+  if kfeedbackEnabled == 1 then    ; if the box is ticked then enable effect
+  ; create a delay buffer with a feedback ratio (user controlled)
+    ;ifeedback   =        0.7                    ; feedback ratio
+    abufferOut1 delayr   0.1                    ; read audio from end of buffer
+    abufferOut2 delayr   0.1   
+        delayw   a1 + (abufferOut1*kfeedbackRatio) ; write audio into buffer (mix in feedback signal)
+        delayw   a2 + (abufferOut2*kfeedbackRatio)
+    a1 = a1 + (abufferOut1*0.4)
+    a2 = a2 + (abufferOut2*0.4)
+  endif
 
 a1    =     a1 * kamp * 0.15  ; scaling amplitude
 a1          clip a1, 0, 0.9   ; fix clipping 
@@ -53,7 +65,8 @@ a2          clip a2, 0, 0.9
 krms    rms a1 
         chnset  krms, "rms1"
 
-        outs    a1,a2      ; send audio to outputs
+; send audio to output (mix the input signal with the delayed signal)
+        outs    a1, a2     ; send audio to outputs
   endin
 </CsInstruments>
 
