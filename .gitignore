@@ -7,3 +7,4 @@ js/libcsound.wasm
 js/FileList.js
 js/libcsound-worklet.js
 node_modules
+.DS_Store

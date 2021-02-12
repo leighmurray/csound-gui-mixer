@@ -13,6 +13,7 @@ function moduleDidLoad() {
     SetCutoffEnabled();
 
     attachListeners();
+    loadTrack();
     window.addEventListener("unload", function(e) {
         if (csound != null)
         csound.destroy();
@@ -141,12 +142,24 @@ function togglePlay() {
     }
 }
 
+function loadTrack() {
+    if (!loaded) {
+        console.log("loading file...");
+        csound.CopyUrlToLocal("/audio/track01.wav", "track01.wav", function() {
+            loaded = true;
+            console.log("Ready to play. \n");
+        });
+    } else {
+        csound.UpdateStatus("to load a new file, first refresh page!")
+    }
+}
+
 function handleFileSelect(evt) {
     if (!loaded) {
         var files = evt.target.files;
         var f = files[0];
         var objectURL = window.URL.createObjectURL(f);
-        csound.CopyUrlToLocal(objectURL, "audiofile.wav", function() {
+        csound.CopyUrlToLocal(objectURL, "track01.wav", function() {
             loaded = true;
             console.log("Ready to play. \n");
         });
