@@ -9,33 +9,41 @@
     <title>WebAudio Csound</title>
     <link rel="stylesheet" href="/css/main.css">
     <script type="text/javascript" src="/js/csound.js"></script>
+    <script type="text/javascript" src="/js/handlebars.min.js"></script>
     <script type="text/javascript" src="/js/main.js"></script>
 </head>
 
 <body>
-    <H1> Audio File Player </H1>
-    <div id="filebut">
-    <input type="file" id="files" name="file" />
+    <h1> Audio File Player </h1>
   </div>
   <div id="controls">
     <p>
-      <input type="range" name="amplitude" id="amp" step="1" value="1000" min="0" max="1000"> amplitude</p>
+      <input type="range" id="amp1" step="1" value="1000" min="0" max="1000"> amplitude
+      </p>
       <p>
-        <input type="checkbox" name="cutoffEnabled" id="cutoffEnabled"> Enable Moog diode ladder emulation</p> 
+        <input type="checkbox" id="cutoffEnabled1"> Enable Moog diode ladder emulation
+      </p>
       <p>
-        <input type="range" name="cutoff" id="cf" step="1" value="20000" min="100" max="20000"> filter frequency</p>
+        <input type="range" id="cf1" step="1" value="20000" min="100" max="20000"> filter frequency
+      </p>
       <p>
-        <input type="checkbox" name="reverbEnabled" id="reverbEnabled"> Enable "natural room" reverberation</p>     
+        <input type="checkbox" id="reverbEnabled1"> Enable "natural room" reverberation
+      </p>
       <p>
-          <input type="range" name="reverb" id="reverb" step="1" value="0" min="0" max="5000"> Reverb</p>
+          <input type="range" id="reverb1" step="1" value="0" min="0" max="5000"> Reverb
+      </p>
       <p>
-          <input type="checkbox" name="resonatorEnabled" id="resonatorEnabled"> Enable String Resonator</p>    
+          <input type="checkbox" id="resonatorEnabled1"> Enable String Resonator
+      </p>
       <p>
-          <input type="range" name="resonatorFreq" id="resonatorFreq" step="10" value="20" min="20" max="1000"> String Resonator Frequency</p>    
+          <input type="range" id="resonatorFreq1" step="10" value="20" min="20" max="1000"> String Resonator Frequency
+      </p>
       <p>
-          <input type="checkbox" name="feedbackEnabled" id="feedbackEnabled"> Enable Feedback (for the delay)</p> 
+          <input type="checkbox" id="feedbackEnabled1"> Enable Feedback (for the delay)
+      </p>
       <p>
-          <input type="range" name="feedbackRatio" id="feedbackRatio" step="1" value="70" min="0" max="100">Feedback Ratio for delay buffer</p>
+          <input type="range" id="feedbackRatio1" step="1" value="70" min="0" max="100">Feedback Ratio for delay buffer
+      </p>
   </div>
     <textarea class="console" cols="65" rows="20" id="console">
       Csound: not loaded</textarea>

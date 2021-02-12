@@ -4,17 +4,6 @@ function moduleDidLoad() {
     console.log = print_msg;
     console.warn = print_msg;
 
-    SetAmp();
-    SetCf();
-    SetReverb(); 
-    SetResonatorFreq();
-    SetFeedbackRatio();
-
-    SetResonatorEnabled();
-    SetReverbEnabled();
-    SetCutoffEnabled();
-    SetFeedbackEnabled();
-
     attachListeners();
     loadTrack();
     window.addEventListener("unload", function(e) {
@@ -26,18 +15,21 @@ function moduleDidLoad() {
 // attach callbacks to sliders
 function attachListeners() {
     document.getElementById('playButton').addEventListener('click', togglePlay);
-    document.getElementById('files').addEventListener('change', handleFileSelect, false);
-    document.getElementById("amp").addEventListener("input", SetAmp);
-    document.getElementById("cf").addEventListener("input", SetCf);
-    document.getElementById("reverb").addEventListener("input", SetReverb);
-    document.getElementById("resonatorFreq").addEventListener("input", SetResonatorFreq);
-    document.getElementById("feedbackRatio").addEventListener("input", SetFeedbackRatio);
-    document.getElementById("resonatorEnabled").addEventListener("input", SetResonatorEnabled);
-    document.getElementById("reverbEnabled").addEventListener("input", SetReverbEnabled);
-    document.getElementById("cutoffEnabled").addEventListener("input", SetCutoffEnabled);
-    document.getElementById("feedbackEnabled").addEventListener("input", SetFeedbackEnabled);
+    for (var i=1; i<=5; i++) {
+        var sliders = new Array("amp", "cf", "reverb", "resonatorFreq", "feedbackRatio");
+        var checkboxes = new Array("resonatorEnabled", "reverbEnabled", "cutoffEnabled", "feedbackEnabled");
+        sliders.forEach(function (sliderName) {
+            var slider = document.getElementById(sliderName + i);
+            slider.addEventListener("input", SetSliderParam);
+            slider.dispatchEvent(new Event("input"));
+        });
+        checkboxes.forEach(function (checkboxName) {
+            var checkbox = document.getElementById(checkboxName + i);
+            checkbox.addEventListener("input", SetCheckboxParam);
+            checkbox.dispatchEvent(new Event("input"));
+        });
+    }
 }
-
 
 function print_msg(message) {
     var element = document.getElementById('console');
@@ -50,70 +42,18 @@ function print_msg(message) {
     }
 }
 
-// set amplitude
-function SetAmp() {
-    SetParam('amp', '', 1000., 0.0);
-}
-
-// set centre frequency
-function SetCf() {
-    SetParam('cf', 'Hz', 1., 0.);
-}
-
-// set reverb 
-function SetReverb() {
-    // Value for reverb is in seconds
-    SetParam("reverb", "seconds", 1000., 0.);
-}
-
-// set the resonating frequency for the string resonator
-function SetResonatorFreq() {
-    // String resonator based on fundamental frequency
-    SetParam("resonatorFreq", "Hz", 1., 0.);
-}
-
-// set the feedback ratio
-function SetFeedbackRatio() {
-    // feedback ratio for delay buffer
-    SetParam("feedbackRatio", "percent", 100., 0.);
-}
-
-// checkbox for cutoff freq
-function SetCutoffEnabled() {
-    // enable emulation of the Moog diode ladder filter
-    SetCheckboxParam("cutoffEnabled", "Cutoff Enabled");
-}
-
-// checkbox for reverberation
-function SetReverbEnabled() {
-    // enable reverberation in a "natural room"
-    SetCheckboxParam("reverbEnabled", "Reverb Enabled");
-}
-
-// checkbox for string resonator
-function SetResonatorEnabled() {
-    // enable string resonator based on fundamental frequency
-    SetCheckboxParam("resonatorEnabled", "Resonator Enabled");
-}
-
-// checkbox for feedback (delay)
-function SetFeedbackEnabled() {
-    // enable feedback for delay
-    SetCheckboxParam("feedbackEnabled", "Feedback Ratio Enabled");
-}
-
 // set checkbox parameter
-function SetCheckboxParam(name, label) {
-    var val = document.getElementById(name).checked;
-    csound.SetChannel(name, val);
-    console.log(name + ": " + val);
+function SetCheckboxParam() {
+    csound.SetChannel(this.id, this.checked);
+    console.log(this.id + ": " + this.checked);
 }
 
 // set parameter
-function SetParam(name, label, scal, off) {
-    var val = document.getElementById(name).value / scal + off;
-    csound.SetChannel(name, val);
-    console.log(name + ": " + val + " " + label);
+function SetSliderParam() {
+    console.log("name: " + this.id);
+    var scaledValue = this.value / this.dataset.scale;
+    csound.SetChannel(this.id, scaledValue);
+    console.log(this.id + ": " + scaledValue);
 }
 
 function clear_console() {
@@ -162,40 +102,12 @@ function togglePlay() {
 function loadTrack() {
     if (!loaded) {
         console.log("loading file...");
-        csound.CopyUrlToLocal("/audio/track01.wav", "track01.wav", function() {
-            loaded = true;
-            console.log("Ready to play. \n");
-        });
-        csound.CopyUrlToLocal("/audio/track02.wav", "track02.wav", function() {
-            loaded = true;
-            console.log("Ready to play. \n");
-        });
-        csound.CopyUrlToLocal("/audio/track03.wav", "track03.wav", function() {
-            loaded = true;
-            console.log("Ready to play. \n");
-        });
-        csound.CopyUrlToLocal("/audio/track04.wav", "track04.wav", function() {
-            loaded = true;
-            console.log("Ready to play. \n");
-        });
-        csound.CopyUrlToLocal("/audio/track05.wav", "track05.wav", function() {
-            loaded = true;
-            console.log("Ready to play. \n");
-        });
-    } else {
-        csound.UpdateStatus("to load a new file, first refresh page!")
-    }
-}
-
-function handleFileSelect(evt) {
-    if (!loaded) {
-        var files = evt.target.files;
-        var f = files[0];
-        var objectURL = window.URL.createObjectURL(f);
-        csound.CopyUrlToLocal(objectURL, "track01.wav", function() {
-            loaded = true;
-            console.log("Ready to play. \n");
-        });
+        for (var i=1; i <= 5; i++) {
+            csound.CopyUrlToLocal("/audio/track0" + i + ".wav", "track0" + i + ".wav", function() {
+                loaded = true;
+                console.log("Ready to play. \n");
+            });
+        }
     } else {
         csound.UpdateStatus("to load a new file, first refresh page!")
     }

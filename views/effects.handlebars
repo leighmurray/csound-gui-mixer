@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<!--
+ csound.js Audio file player example
+ Copyright (C) 2013 V Lazzarini
+-->
+
+<head>
+    <title>WebAudio Csound</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/csound.js"></script>
+    <script type="text/javascript" src="/js/handlebars.min.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+</head>
+
+<body>
+    <h1> Audio File Player </h1>
+  </div>
+  {{#each instruments}}
+    {{> controls instNo=@this}}
+  {{/each}}
+    <textarea class="console" cols="65" rows="20" id="console">
+      Csound: not loaded</textarea>
+    <p>
+        <button id="playButton">Play</button>
+    </p>
+</body>
+
+</html>
