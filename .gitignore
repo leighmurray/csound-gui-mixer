@@ -6,3 +6,4 @@ js/CsoundScriptProcessorNode.js
 js/libcsound.wasm
 js/FileList.js
 js/libcsound-worklet.js
+node_modules
