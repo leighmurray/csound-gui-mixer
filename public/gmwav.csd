@@ -29,7 +29,7 @@ kfeedbackEnabled chnget "feedbackEnabled"
 
 
 ; read audio from disk using diskin2 opcode
-a1, a2      diskin2  "audiofile.wav", kSpeed, iSkip, iLoop
+a1, a2      diskin2  "track01.wav", kSpeed, iSkip, iLoop
 
   if kcutoffEnabled == 1 then    ; if the box is ticked then enable effect
     a1          moogvcf   a1, kcf, 0.8  ; emulate the Moog diode ladder filter
