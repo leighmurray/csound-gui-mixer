@@ -1,3 +1,5 @@
+mixer = new Mixer(5);
+
 // called by csound.js
 function moduleDidLoad() {
     clear_console();
@@ -5,7 +7,9 @@ function moduleDidLoad() {
     console.warn = print_msg;
 
     attachListeners();
-    loadTrack();
+    //loadTrack();
+    console.log("calling load tracks");
+    mixer.LoadTracks();
     window.addEventListener("unload", function(e) {
         if (csound != null)
         csound.destroy();
@@ -73,42 +77,15 @@ function handleMessage(message) {
     }
 }
 
-var playing = false;
-var started = false;
-var loaded = false;
-
 function togglePlay() {
     console.log("toggle play");
-    if (loaded) {
-        if (!playing) {
-            console.log("playing");
-            if (started) csound.Play();
-            else {
-                CsoundObj.CSOUND_AUDIO_CONTEXT.resume();
-                csound.PlayCsd("gmwav.csd");
-                started = true;
-            }
-            document.getElementById('playButton').innerText = "Pause";
-            playing = true;
-        } else {
-            console.log("pausing");
-            csound.Pause()
+    if (mixer.playing) {
+        if (mixer.Pause()) {
             document.getElementById('playButton').innerText = "Play";
-            playing = false;
-        }
-    }
-}
-
-function loadTrack() {
-    if (!loaded) {
-        console.log("loading file...");
-        for (var i=1; i <= 5; i++) {
-            csound.CopyUrlToLocal("/audio/track0" + i + ".wav", "track0" + i + ".wav", function() {
-                loaded = true;
-                console.log("Ready to play. \n");
-            });
         }
     } else {
-        csound.UpdateStatus("to load a new file, first refresh page!")
+        if (mixer.Play()) {
+            document.getElementById('playButton').innerText = "Pause";
+        }
     }
 }

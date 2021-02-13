@@ -11,6 +11,16 @@ app.engine('handlebars', handlebars({
   layoutsDir: __dirname + '/views/layouts',
   partialsDir: __dirname + '/views/partials/',
   defaultLayout: 'base',
+  helpers: {
+      // 👇 Importantly, define the helper as a regular `function`, _not_ an arrow-function.
+      section(name, options) {
+          if (!this._sections) {
+              this._sections = {};
+          }
+          this._sections[name] = options.fn(this);
+          return null;
+      },
+  },
 }));
 
 app.use('/js/', express.static('node_modules/paper/dist'));
