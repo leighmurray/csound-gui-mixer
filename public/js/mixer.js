@@ -22,7 +22,7 @@ class Effect {
     SetEnabled (isEnabled) {
         if (isEnabled != this.enabled) {
             var channelName = this.name + "Enabled" + this.trackNumber;
-            //console.log("Enabling - " + channelName + ": " + isEnabled);
+            console.log("Enabling - " + channelName + ": " + isEnabled);
             csound.SetChannel(channelName, isEnabled);
             this.enabled = isEnabled;
         }
