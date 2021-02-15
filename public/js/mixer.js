@@ -1,26 +1,61 @@
 class Effect {
-    Enabled (isEnabled) {
+    name;
+    param;
+    min = 0;
+    max = 1;
+    defaultValue = 0;
+    enabled = false;
+    trackNumber;
 
+    constructor (trackNumber, name, param, min, max, defaultValue, enabled = false)
+    {
+        this.trackNumber = trackNumber;
+        this.name = name;
+        this.param = param;
+        this.min = min;
+        this.max = max;
+        this.defaultValue = defaultValue;
+        this.value;
+        this.enabled = enabled;
+    }
+
+    SetEnabled (isEnabled) {
+        if (isEnabled != this.enabled) {
+            var channelName = this.name + "Enabled" + this.trackNumber;
+            //console.log("Enabling - " + channelName + ": " + isEnabled);
+            csound.SetChannel(channelName, isEnabled);
+            this.enabled = isEnabled;
+        }
+    }
+
+    SetParam (value) {
+        if (this.value != value) {
+            var channelName = this.param + this.trackNumber;
+            //console.log("Param - " + channelName + ": " + value);
+            csound.SetChannel(channelName, value);
+            this.value = value;
+        }
+    }
+
+    RemapAndSetParam(value, low, high) {
+        var mappedValue = this.min + (this.max - this.min) * (value - low) / (high - low);
+        this.SetParam(mappedValue);
     }
 }
 
 class Track {
     trackNumber;
     amp = 1;
-    cf = 8000;
-    reverb = 0;
-    resonatorFreq = 0;
-    feedbackRatio = 0;
-
-    resonatorEnabled = false;
-    reverbEnabled = false;
-    cutoffEnabled = false;
-    feedbackEnabled = false;
+    effects = new Array();
 
     loaded = false;
 
     constructor(trackNumber) {
         this.trackNumber = trackNumber;
+        this.effects.push(new Effect(this.trackNumber, 'cutoff', 'cf', 100, 8000, 8000, false));
+        this.effects.push(new Effect(this.trackNumber, 'reverb', 'reverb', 0, 5, 0, false));
+        this.effects.push(new Effect(this.trackNumber, 'resonator', 'resonatorFreq', 20, 1000, 20, false));
+        this.effects.push(new Effect(this.trackNumber, 'feedback', 'feedbackRatio', 0, 0.9, 0.7, false));
     }
 
     Load () {
@@ -47,6 +82,12 @@ class Mixer {
         {
             this.tracks.push(new Track(i));
         }
+    }
+
+    SetEffectValue(trackNumber, mixerEffect, value) {
+        var channelName = mixerEffect + trackNumber;
+        //console.log(channelName + ": " + value);
+        csound.SetChannel(channelName, value);
     }
 
     Play () {

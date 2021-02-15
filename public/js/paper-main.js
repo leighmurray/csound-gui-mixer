@@ -12,44 +12,58 @@ project.currentStyle = {
 	fillColor: 'black'
 };
 
-var ballPositions = [[255, 129], [610, 73], [486, 363],
-	[117, 459], [484, 726]];
+var ballPositions = [[455, 329], [810, 273], [686, 563],
+	[217, 659], [684, 926]];
 
 var handle_len_rate = 2.4;
-var circlePaths = [];
+var effectCircles = new Group();
+
+var effectsParamsArray = ["cf", "reverb", "resonatorFreq", "feedbackRatio"];
+var effectsNameArray = ["cutoff", "reverb", "resonator", "feedback"];
+
 var radius = 50;
-for (var i = 0, l = ballPositions.length; i < l; i++) {
-	var circlePath = new Path.Circle({
+for (var i = 0; i < effectsParamsArray.length; i++) {
+	var effectCircle = new Shape.Circle({
 		center: ballPositions[i],
 		radius: 50,
 		fillColor: "blue"
 	});
-	circlePaths.push(circlePath);
+	effectCircle.data.effectParam = effectsParamsArray[i];
+	effectCircle.data.effectName = effectsNameArray[i];
+	effectCircle.onMouseDown = function () {
+		if (selectedCircle == this) {
+			selectedCircle = null
+		} else {
+			selectedCircle = this;
+		}
+	};
+	effectCircles.addChild(effectCircle);
 }
 
 var instrumentCircles = new Group();
 
 var selectedCircle;
 
+
+
 for (i=0; i<numberOfInstruments; i++) {
 	var currentCircle = new Shape.Circle({
-		center: [800, 300 + i*100],
+		center: [1200, 300 + i*100],
  		radius: 10,
 		fillColor: "yellow",
 		strokeColor: "black",
 		strokeWidth: 2,
-		blendMode: "multiply"
+		blendMode: "hue"
 	});
 
 	currentCircle.data.instrumentNumber = i+1;
-
+	currentCircle.fillColor.hue *= i;
 	currentCircle.onMouseDown = function () {
 		if (selectedCircle == this) {
 			selectedCircle = null
 		} else {
 			selectedCircle = this;
 		}
-		console.log(this.data.instrumentNumber);
 	};
 
 	instrumentCircles.addChild(currentCircle);
@@ -62,7 +76,6 @@ function onMouseMove(event) {
 		selectedCircle.position = event.point;
 		generateConnections();
 	}
-
 }
 
 function onMouseDown(event) {
@@ -71,41 +84,35 @@ function onMouseDown(event) {
 
 var connections = new Group();
 
+var maxConnectionDistance = 300;
+
 function generateConnections() {
 	// Remove the last connection paths:
 	connections.removeChildren();
-	console.log("generating connections");
 
-	for (var i = 0; i < circlePaths.length; i++) {
-		for (var j = 0; j < instrumentCircles.children.length; j++) {
-
-			var path = metaball(circlePaths[i], instrumentCircles.children[j], 0.5, handle_len_rate, 300);
-			console.log("checking circles [" + i + "][" + j + "]");
+	for (var effectNo = 0; effectNo < effectCircles.children.length; effectNo++) {
+		for (var trackNo = 0; trackNo < instrumentCircles.children.length; trackNo++) {
+			var currentEffectCircle = effectCircles.children[effectNo];
+			var currentTrackCircle = instrumentCircles.children[trackNo];
+			var path = metaball(currentEffectCircle, currentTrackCircle, 0.5, handle_len_rate, maxConnectionDistance);
 			if (path) {
-				console.log("we have a path");
 				connections.appendTop(path);
-				//path.removeOnMove();
+			}
+
+			var center1 = currentEffectCircle.position;
+			var center2 = currentTrackCircle.position;
+			var distance = center1.getDistance(center2);
+
+			if (distance < maxConnectionDistance) {
+				mixer.tracks[trackNo].effects[effectNo].SetEnabled(true);
+				mixer.tracks[trackNo].effects[effectNo].RemapAndSetParam(distance, maxConnectionDistance, 0);
+			}
+			else {
+				mixer.tracks[trackNo].effects[effectNo].SetEnabled(false);
 			}
 		}
 	}
 }
-
-// function generateConnections(paths) {
-// 	// Remove the last connection paths:
-// 	connections.removeChildren();
-
-// 	for (var i = 0, l = paths.length; i < l; i++) {
-// 		for (var j = i - 1; j >= 0; j--) {
-// 			var path = metaball(paths[i], paths[j], 0.5, handle_len_rate, 300);
-// 			if (path) {
-// 				connections.appendTop(path);
-// 				path.removeOnMove();
-// 			}
-// 		}
-// 	}
-// }
-
-//generateConnections(circlePaths);
 
 // ---------------------------------------------
 function metaball(ball1, ball2, v, handle_len_rate, maxDistance) {
@@ -178,7 +185,7 @@ function getVector(radians, length) {
 
 document.getElementById("canvas").addEventListener('wheel', function (event) {
 	console.log("scrolling");
-	if (selectedCircle) {
+	if (selectedCircle && selectedCircle.isDescendant(instrumentCircles)) {
 		var scale = event.deltaY * -0.1;
 		console.log(scale);
 		console.log(selectedCircle);
