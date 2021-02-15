@@ -2,18 +2,8 @@ mixer = new Mixer(5);
 
 // called by csound.js
 function moduleDidLoad() {
-    clear_console();
-    console.log = print_msg;
-    console.warn = print_msg;
-
     attachListeners();
-    //loadTrack();
-    console.log("calling load tracks");
-    mixer.LoadTracks();
-    window.addEventListener("unload", function(e) {
-        if (csound != null)
-        csound.destroy();
-    }, false);
+    initialiseMixer();
 }
 
 // attach callbacks to sliders
@@ -35,17 +25,6 @@ function attachListeners() {
     }
 }
 
-function print_msg(message) {
-    var element = document.getElementById('console');
-    element.value += (message + "\n");
-    element.scrollTop = 99999; // focus on bottom
-    count += 1;
-    if (count == 1000) {
-        clear_console();
-        count = 0;
-    }
-}
-
 // set checkbox parameter
 function SetCheckboxParam() {
     csound.SetChannel(this.id, this.checked);
@@ -58,23 +37,6 @@ function SetSliderParam() {
     var scaledValue = this.value / this.dataset.scale;
     csound.SetChannel(this.id, scaledValue);
     console.log(this.id + ": " + scaledValue);
-}
-
-function clear_console() {
-    var element = document.getElementById('console');
-    element.value = ' ';
-}
-
-var count = 0;
-
-function handleMessage(message) {
-    var element = document.getElementById('console');
-    element.value += message;
-    count += 1;
-    if (count == 1000) {
-        element.value = ' ';
-        count = 0;
-    }
 }
 
 function togglePlay() {

@@ -1,3 +1,11 @@
+var numberOfInstruments = 5;
+
+mixer = new Mixer(numberOfInstruments);
+
+window.moduleDidLoad = function () {
+	initialiseMixer();
+}
+
 // Ported from original Metaball script by SATO Hiroyuki
 // http://park12.wakwak.com/~shp/lc/et/en_aics_script.html
 project.currentStyle = {
@@ -14,41 +22,90 @@ for (var i = 0, l = ballPositions.length; i < l; i++) {
 	var circlePath = new Path.Circle({
 		center: ballPositions[i],
 		radius: 50,
-		fillColor: "blue",
-		strokeColor: "black",
-		strokeWidth: 5
+		fillColor: "blue"
 	});
 	circlePaths.push(circlePath);
 }
 
-var largeCircle = new Path.Circle({
-	center: [676, 433],
-	radius: 100
-});
-circlePaths.push(largeCircle);
+var instrumentCircles = new Group();
+
+var selectedCircle;
+
+for (i=0; i<numberOfInstruments; i++) {
+	var currentCircle = new Shape.Circle({
+		center: [800, 300 + i*100],
+ 		radius: 10,
+		fillColor: "yellow",
+		strokeColor: "black",
+		strokeWidth: 2,
+		blendMode: "multiply"
+	});
+
+	currentCircle.data.instrumentNumber = i+1;
+
+	currentCircle.onMouseDown = function () {
+		if (selectedCircle == this) {
+			selectedCircle = null
+		} else {
+			selectedCircle = this;
+		}
+		console.log(this.data.instrumentNumber);
+	};
+
+	instrumentCircles.addChild(currentCircle);
+}
+
+// circlePaths.push(largeCircle);
 
 function onMouseMove(event) {
-	largeCircle.position = event.point;
-	generateConnections(circlePaths);
+	if (selectedCircle) {
+		selectedCircle.position = event.point;
+		generateConnections();
+	}
+
+}
+
+function onMouseDown(event) {
+	mixer.Play();
 }
 
 var connections = new Group();
-function generateConnections(paths) {
+
+function generateConnections() {
 	// Remove the last connection paths:
 	connections.removeChildren();
+	console.log("generating connections");
 
-	for (var i = 0, l = paths.length; i < l; i++) {
-		for (var j = i - 1; j >= 0; j--) {
-			var path = metaball(paths[i], paths[j], 0.5, handle_len_rate, 300);
+	for (var i = 0; i < circlePaths.length; i++) {
+		for (var j = 0; j < instrumentCircles.children.length; j++) {
+
+			var path = metaball(circlePaths[i], instrumentCircles.children[j], 0.5, handle_len_rate, 300);
+			console.log("checking circles [" + i + "][" + j + "]");
 			if (path) {
+				console.log("we have a path");
 				connections.appendTop(path);
-				path.removeOnMove();
+				//path.removeOnMove();
 			}
 		}
 	}
 }
 
-generateConnections(circlePaths);
+// function generateConnections(paths) {
+// 	// Remove the last connection paths:
+// 	connections.removeChildren();
+
+// 	for (var i = 0, l = paths.length; i < l; i++) {
+// 		for (var j = i - 1; j >= 0; j--) {
+// 			var path = metaball(paths[i], paths[j], 0.5, handle_len_rate, 300);
+// 			if (path) {
+// 				connections.appendTop(path);
+// 				path.removeOnMove();
+// 			}
+// 		}
+// 	}
+// }
+
+//generateConnections(circlePaths);
 
 // ---------------------------------------------
 function metaball(ball1, ball2, v, handle_len_rate, maxDistance) {
@@ -118,3 +175,18 @@ function getVector(radians, length) {
 		length: length
 	});
 }
+
+document.getElementById("canvas").addEventListener('wheel', function (event) {
+	console.log("scrolling");
+	if (selectedCircle) {
+		var scale = event.deltaY * -0.1;
+		console.log(scale);
+		console.log(selectedCircle);
+		var newRadius = selectedCircle.radius + scale;
+		console.log(newRadius);
+		newRadius = Math.min(Math.max(newRadius, 10), 100);
+		selectedCircle.radius = newRadius;
+		csound.SetChannel("amp" + selectedCircle.data.instrumentNumber, newRadius/100);
+		generateConnections();
+	}
+});

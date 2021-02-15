@@ -81,10 +81,58 @@ class Mixer {
         return false;
     }
 
+    TogglePlay() {
+        if (!this.Play()){
+            this.Pause();
+        }
+    }
+
     LoadTracks() {
         this.tracks.forEach(function (track) {
             track.Load();
         });
         this.loaded = true; // It takes a while to load so this isn't completely accurate.
     }
+}
+
+
+function clear_console() {
+    var element = document.getElementById('console');
+    element.value = ' ';
+}
+
+function print_msg(message) {
+    var element = document.getElementById('console');
+    element.value += (message + "\n");
+    element.scrollTop = 99999; // focus on bottom
+    count += 1;
+    if (count == 1000) {
+        clear_console();
+        count = 0;
+    }
+}
+
+var count = 0;
+
+function handleMessage(message) {
+    var element = document.getElementById('console');
+    element.value += message;
+    count += 1;
+    if (count == 1000) {
+        element.value = ' ';
+        count = 0;
+    }
+}
+
+function initialiseMixer(){
+    clear_console();
+    console.log = print_msg;
+    console.warn = print_msg;
+
+    console.log("calling load tracks");
+    mixer.LoadTracks();
+    window.addEventListener("unload", function(e) {
+        if (csound != null)
+        csound.destroy();
+    }, false);
 }
