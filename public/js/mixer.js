@@ -60,10 +60,10 @@ class Track {
         this.effects.push(new Effect(this.trackNumber, 'harmony', 'harmonyEstimFreq', 200, 5000, 1000, false));
     }
 
-    Load () {
+    Load (songNumber) {
         if (!this.loaded) {
             console.log("loading file...");
-            csound.CopyUrlToLocal("/audio/track0" + this.trackNumber + ".wav", "track0" + this.trackNumber + ".wav", () => function() {
+            csound.CopyUrlToLocal("/audio/track" + songNumber + this.trackNumber + ".wav", "track0" + this.trackNumber + ".wav", () => function() {
                 this.loaded = true;
                 console.log("Ready to play. \n");
             });
@@ -130,9 +130,9 @@ class Mixer {
         }
     }
 
-    LoadTracks() {
+    LoadTracks(songNumber) {
         this.tracks.forEach(function (track) {
-            track.Load();
+            track.Load(songNumber);
         });
         this.loaded = true; // It takes a while to load so this isn't completely accurate.
     }
@@ -173,9 +173,28 @@ function initialiseMixer(){
     console.warn = print_msg;
 
     console.log("calling load tracks");
-    mixer.LoadTracks();
+    var songNumber = qs['song'];
+    if (!songNumber){
+        songNumber = '0';
+    }
+    mixer.LoadTracks(songNumber);
+
     window.addEventListener("unload", function(e) {
         if (csound != null)
         csound.destroy();
     }, false);
 }
+
+var qs = (function(a) {
+    if (a == "") return {};
+    var b = {};
+    for (var i = 0; i < a.length; ++i)
+    {
+        var p=a[i].split('=', 2);
+        if (p.length == 1)
+            b[p[0]] = "";
+        else
+            b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+    }
+    return b;
+})(window.location.search.substr(1).split('&'));
