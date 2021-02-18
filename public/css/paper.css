@@ -35,5 +35,18 @@ canvas {
 .fade-out {
     visibility: hidden;
     opacity: 0;
-    transition: visibility 0s 2s, opacity 2s linear;
+    transition: visibility 0s 1s, opacity 1s linear;
+}
+
+#legend {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    background-color: white;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 5px;
+}
+
+.hidden {
+    display: none;
 }

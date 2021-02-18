@@ -25,9 +25,9 @@ var ballPositions = [[455, 229], [810, 173], [686, 463],
 var handle_len_rate = 2.4;
 var effectCircles = new Group();
 
-var effectsParamsArray = ["cf", "reverb", "resonatorFreq", "feedbackRatio", 
+var effectsParamsArray = ["cf", "reverb", "resonatorFreq", "feedbackRatio",
 		"decimatorBitDepth", "harmonyEstimFreq"];
-var effectsNameArray = ["cutoff", "reverb", "resonator", "feedback", 
+var effectsNameArray = ["cutoff", "reverb", "resonator", "feedback",
 		"decimator", "harmony"];
 
 var radius = 50;
@@ -41,10 +41,9 @@ for (var i = 0; i < effectsParamsArray.length; i++) {
 	effectCircle.data.effectName = effectsNameArray[i];
 	effectCircle.onMouseDown = function () {
 		if (selectedCircle == this) {
-			selectedCircle = null
+			DeselectCircle();
 		} else {
-			selectedCircle = this;
-			ignoreMouseDown = true;
+			SelectCircle(this);
 		}
 	};
 	effectCircles.addChild(effectCircle);
@@ -70,10 +69,9 @@ for (i=0; i<numberOfInstruments; i++) {
 	//currentCircle.fillColor.hue *= i;
 	currentCircle.onMouseDown = function (event) {
 		if (selectedCircle == this) {
-			selectedCircle = null
+			DeselectCircle();
 		} else {
-			selectedCircle = this;
-			ignoreMouseDown = true;
+			SelectCircle(this);
 		}
 	};
 
@@ -90,7 +88,7 @@ function onMouseDown(event) {
 	mixer.Play();
 	if (!ignoreMouseDown)
 	{
-		selectedCircle = null;
+		DeselectCircle();
 	}
 	ignoreMouseDown = false;
 }
@@ -125,6 +123,18 @@ function generateConnections() {
 			}
 		}
 	}
+}
+
+function SelectCircle(circleToSelect) {
+	selectedCircle = circleToSelect;
+	selectedCircle.strokeColor = 'white';
+	selectedCircle.strokeWidth = 3;
+	ignoreMouseDown = true;
+}
+
+function DeselectCircle() {
+	selectedCircle.strokeWidth = 0;
+	selectedCircle = null;
 }
 
 // ---------------------------------------------
@@ -232,17 +242,15 @@ function moveCircle(circle, elapsedTime) {
 	if (!circle.data.speed) {
 		circle.data.speed = 1;
 	}
-	
-	
 
 	if (circle.data.moveHorizontally) {
-		var sineDelta = Math.sin(elapsedTime - circle.data.timeOffset) * circle.data.direction;
+		var sineDelta = Math.sin(elapsedTime*circle.data.speed - circle.data.timeOffset) * circle.data.direction;
 		circle.position.x = circle.data.origin.x + (sineDelta * circle.data.distanceX);
 	} else {
 		circle.position.x = circle.data.origin.x;
 	}
 	if (circle.data.moveVertically) {
-		var cosDelta = Math.cos(elapsedTime - circle.data.timeOffset);
+		var cosDelta = Math.cos(elapsedTime*circle.data.speed - circle.data.timeOffset);
 		circle.position.y = circle.data.origin.y + (cosDelta * circle.data.distanceY);
 	} else {
 		circle.position.y = circle.data.origin.y;
@@ -250,7 +258,7 @@ function moveCircle(circle, elapsedTime) {
 }
 
 function onFrame (event) {
-	
+
 	instrumentCircles.children.forEach(function (instrumentCircle) {
 		moveCircle(instrumentCircle, event.time);
 	});
@@ -263,6 +271,10 @@ function onFrame (event) {
 }
 
 function onKeyDown(event) {
+	if (event.key == 'space') {
+		document.getElementById('legend').classList.toggle('hidden');
+	}
+
 	if (selectedCircle) {
 		if (event.key == 'v') {
 			console.log("toggle vertical");
@@ -279,6 +291,48 @@ function onKeyDown(event) {
 		if (event.key == 'd') {
 			console.log("change direction");
 			selectedCircle.data.direction = selectedCircle.data.direction * -1;
+		}
+		if (event.key == "up") {
+			console.log("increase y distance");
+			selectedCircle.data.distanceY += 5;
+			if (selectedCircle.data.distanceY > 1000) {
+				selectedCircle.data.distanceY = 1000;
+			}
+		}
+		if (event.key == "down") {
+			console.log("decrease y distance");
+			selectedCircle.data.distanceY -= 5;
+			if (selectedCircle.data.distanceY < 5) {
+				selectedCircle.data.distanceY = 5;
+			}
+		}
+		if (event.key == "right") {
+			console.log("increase x distance");
+			selectedCircle.data.distanceX += 5;
+			if (selectedCircle.data.distanceX > 1000) {
+				selectedCircle.data.distanceX = 1000;
+			}
+		}
+		if (event.key == "left") {
+			console.log("decrease x distance");
+			selectedCircle.data.distanceX -= 5;
+			if (selectedCircle.data.distanceX < 5) {
+				selectedCircle.data.distanceX = 5;
+			}
+		}
+		if (event.key == "f") {
+			console.log("increase speed");
+			selectedCircle.data.speed += 1;
+			if (selectedCircle.data.speed > 20) {
+				selectedCircle.data.speed = 20;
+			}
+		}
+		if (event.key == "s") {
+			console.log("decrease speed");
+			selectedCircle.data.speed -= 1;
+			if (selectedCircle.data.speed < 1) {
+				selectedCircle.data.speed = 1;
+			}
 		}
 	}
 }
