@@ -2,6 +2,8 @@ var numberOfInstruments = 5;
 
 mixer = new Mixer(numberOfInstruments);
 
+var ignoreMouseDown = false;
+
 function fadeOutLoadingScreen () {
 	document.getElementById("loading").classList.add("fade-out");;
 }
@@ -37,11 +39,12 @@ for (var i = 0; i < effectsParamsArray.length; i++) {
 	});
 	effectCircle.data.effectParam = effectsParamsArray[i];
 	effectCircle.data.effectName = effectsNameArray[i];
-	effectCircle.onMouseDown = function (event) {
+	effectCircle.onMouseDown = function () {
 		if (selectedCircle == this) {
 			selectedCircle = null
 		} else {
 			selectedCircle = this;
+			ignoreMouseDown = true;
 		}
 	};
 	effectCircles.addChild(effectCircle);
@@ -65,17 +68,12 @@ for (i=0; i<numberOfInstruments; i++) {
 
 	currentCircle.data.instrumentNumber = i+1;
 	//currentCircle.fillColor.hue *= i;
-	currentCircle.onMouseDown = function () {
+	currentCircle.onMouseDown = function (event) {
 		if (selectedCircle == this) {
 			selectedCircle = null
-			this.data.origin = this.position;
-			this.data.moveHorizontally = true;
-			this.data.moveVertically = true;
 		} else {
 			selectedCircle = this;
-			this.data.moveHorizontally = false;
-			this.data.moveVertically = false;
-			this.data.origin = null;
+			ignoreMouseDown = true;
 		}
 	};
 
@@ -84,13 +82,17 @@ for (i=0; i<numberOfInstruments; i++) {
 
 function onMouseMove(event) {
 	if (selectedCircle) {
-		selectedCircle.position = event.point;
-		generateConnections();
+		selectedCircle.data.origin = event.point;
 	}
 }
 
 function onMouseDown(event) {
 	mixer.Play();
+	if (!ignoreMouseDown)
+	{
+		selectedCircle = null;
+	}
+	ignoreMouseDown = false;
 }
 
 var connections = new Group();
@@ -204,28 +206,79 @@ document.getElementById("canvas").addEventListener('wheel', function (event) {
 		newRadius = Math.min(Math.max(newRadius, 10), 100);
 		selectedCircle.radius = newRadius;
 		csound.SetChannel("amp" + selectedCircle.data.instrumentNumber, newRadius/100);
-		generateConnections();
 	}
 });
 
 var movementDistance = 50;
 
+function moveCircle(circle, elapsedTime) {
+	if (!circle.data.origin){
+		return;
+	}
+	if (!circle.data.timeOffset)
+	{
+		circle.data.timeOffset = elapsedTime;
+	}
+	if (circle.data.direction == null)
+	{
+		circle.data.direction = 1;
+	}
+	if (!circle.data.distanceX) {
+		circle.data.distanceX = movementDistance;
+	}
+	if (!circle.data.distanceY) {
+		circle.data.distanceY = movementDistance;
+	}
+	if (!circle.data.speed) {
+		circle.data.speed = 1;
+	}
+	
+	
+
+	if (circle.data.moveHorizontally) {
+		var sineDelta = Math.sin(elapsedTime - circle.data.timeOffset) * circle.data.direction;
+		circle.position.x = circle.data.origin.x + (sineDelta * circle.data.distanceX);
+	} else {
+		circle.position.x = circle.data.origin.x;
+	}
+	if (circle.data.moveVertically) {
+		var cosDelta = Math.cos(elapsedTime - circle.data.timeOffset);
+		circle.position.y = circle.data.origin.y + (cosDelta * circle.data.distanceY);
+	} else {
+		circle.position.y = circle.data.origin.y;
+	}
+}
+
 function onFrame (event) {
-	var updated = false;
+	
 	instrumentCircles.children.forEach(function (instrumentCircle) {
-		if (instrumentCircle.data.moveHorizontally) {
-			var sineDelta = Math.sin(event.time);
-			instrumentCircle.position.x = instrumentCircle.data.origin.x + (sineDelta * movementDistance);
-			updated = true;
-		}
-		if (instrumentCircle.data.moveVertically) {
-			var cosDelta = Math.cos(event.time);
-			instrumentCircle.position.y = instrumentCircle.data.origin.y + (cosDelta * movementDistance);
-			updated = true;
-		}
+		moveCircle(instrumentCircle, event.time);
 	});
 
-	if (updated == true) {
-		generateConnections();
+	effectCircles.children.forEach(function (instrumentCircle) {
+		moveCircle(instrumentCircle, event.time);
+	});
+
+	generateConnections();
+}
+
+function onKeyDown(event) {
+	if (selectedCircle) {
+		if (event.key == 'v') {
+			console.log("toggle vertical");
+			selectedCircle.data.moveVertically = !selectedCircle.data.moveVertically;
+		}
+		if (event.key == 'h') {
+			console.log("toggle horizontal");
+			selectedCircle.data.moveHorizontally = !selectedCircle.data.moveHorizontally;
+		}
+		if (event.key == 'r') {
+			console.log("reset rotation");
+			selectedCircle.data.timeOffset = event.time;
+		}
+		if (event.key == 'd') {
+			console.log("change direction");
+			selectedCircle.data.direction = selectedCircle.data.direction * -1;
+		}
 	}
 }
