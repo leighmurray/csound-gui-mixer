@@ -10,6 +10,7 @@ ksmps 	= 	32
 nchnls 	= 	2
 0dbfs   =   1   ; the amplitude range is 0/1
 
+// bit crusher yay
   opcode Decimator, a, akk	;UDO Sample rate / Bit depth reducer
   ;see http://www.csounds.com/udo/displayOpcode.php?opcode_id=73
   ; found in the example of upsamp opcode
@@ -74,9 +75,8 @@ kmaxvar = 0.1
 imode   = 1
 iminfrq = 100
 iprd    = 0.02
-  
-//estimated frequency
-SharmonyEstimFreq sprintf "harmonyEstimFreq%i", indx
+
+SharmonyEstimFreq sprintf "harmonyEstimFreq%i", indx  ;estimated frequency
 kharmonyEstimFreq chnget SharmonyEstimFreq
 
 SharmonyEnabled sprintf "harmonyEnabled%i", indx
