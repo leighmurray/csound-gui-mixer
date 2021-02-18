@@ -35,7 +35,7 @@ for (var i = 0; i < effectsParamsArray.length; i++) {
 	});
 	effectCircle.data.effectParam = effectsParamsArray[i];
 	effectCircle.data.effectName = effectsNameArray[i];
-	effectCircle.onMouseDown = function () {
+	effectCircle.onMouseDown = function (event) {
 		if (selectedCircle == this) {
 			selectedCircle = null
 		} else {
@@ -66,15 +66,19 @@ for (i=0; i<numberOfInstruments; i++) {
 	currentCircle.onMouseDown = function () {
 		if (selectedCircle == this) {
 			selectedCircle = null
+			this.data.origin = this.position;
+			this.data.moveHorizontally = true;
+			this.data.moveVertically = true;
 		} else {
 			selectedCircle = this;
+			this.data.moveHorizontally = false;
+			this.data.moveVertically = false;
+			this.data.origin = null;
 		}
 	};
 
 	instrumentCircles.addChild(currentCircle);
 }
-
-// circlePaths.push(largeCircle);
 
 function onMouseMove(event) {
 	if (selectedCircle) {
@@ -201,3 +205,25 @@ document.getElementById("canvas").addEventListener('wheel', function (event) {
 		generateConnections();
 	}
 });
+
+var movementDistance = 50;
+
+function onFrame (event) {
+	var updated = false;
+	instrumentCircles.children.forEach(function (instrumentCircle) {
+		if (instrumentCircle.data.moveHorizontally) {
+			var sineDelta = Math.sin(event.time);
+			instrumentCircle.position.x = instrumentCircle.data.origin.x + (sineDelta * movementDistance);
+			updated = true;
+		}
+		if (instrumentCircle.data.moveVertically) {
+			var cosDelta = Math.cos(event.time);
+			instrumentCircle.position.y = instrumentCircle.data.origin.y + (cosDelta * movementDistance);
+			updated = true;
+		}
+	});
+
+	if (updated == true) {
+		generateConnections();
+	}
+}
