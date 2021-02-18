@@ -18,13 +18,15 @@ project.currentStyle = {
 };
 
 var ballPositions = [[455, 229], [810, 173], [686, 463],
-	[217, 559], [154, 200]];
+	[217, 559], [154, 200], [947, 534]];
 
 var handle_len_rate = 2.4;
 var effectCircles = new Group();
 
-var effectsParamsArray = ["cf", "reverb", "resonatorFreq", "feedbackRatio", "decimatorBitDepth"];
-var effectsNameArray = ["cutoff", "reverb", "resonator", "feedback", "decimator"];
+var effectsParamsArray = ["cf", "reverb", "resonatorFreq", "feedbackRatio", 
+		"decimatorBitDepth", "harmonyEstimFreq"];
+var effectsNameArray = ["cutoff", "reverb", "resonator", "feedback", 
+		"decimator", "harmony"];
 
 var radius = 50;
 for (var i = 0; i < effectsParamsArray.length; i++) {
