@@ -18,7 +18,7 @@ project.currentStyle = {
 };
 
 var ballPositions = [[455, 229], [810, 173], [686, 463],
-	[217, 559], [154, 200], [947, 534]];
+	[217, 559], [154, 200], [847, 534]];
 
 var handle_len_rate = 2.4;
 var effectCircles = new Group();
