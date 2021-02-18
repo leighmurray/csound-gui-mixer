@@ -12,6 +12,7 @@ nchnls 	= 	2
 
   opcode Decimator, a, akk	;UDO Sample rate / Bit depth reducer
   ;see http://www.csounds.com/udo/displayOpcode.php?opcode_id=73
+  ; found in the example of upsamp opcode
          setksmps   1
 ain, kbit, ksrate xin
 
@@ -68,6 +69,19 @@ kfeedbackEnabled chnget SfeedbackEnabled
 SdecimatorEnabled sprintf "decimatorEnabled%i", indx
 kdecimatorEnabled chnget SdecimatorEnabled
 
+// variables for the harmony effect
+kmaxvar = 0.1
+imode   = 1
+iminfrq = 100
+iprd    = 0.02
+  
+//estimated frequency
+SharmonyEstimFreq sprintf "harmonyEstimFreq%i", indx
+kharmonyEstimFreq chnget SharmonyEstimFreq
+
+SharmonyEnabled sprintf "harmonyEnabled%i", indx
+kharmonyEnabled chnget SharmonyEnabled
+
 ; read audio from disk using diskin2 opcode
 StrackName sprintf "track0%i.wav", indx
 
@@ -99,12 +113,22 @@ a1, a2      diskin2  StrackName, kSpeed, iSkip, iLoop
   endif
 
   if kdecimatorEnabled == 1 then    ; if the box is ticked then enable effect
-    a1     Decimator a1, kdecimatorBitDepth, sr
+    a1     Decimator a1, kdecimatorBitDepth, sr   ; bit depth reducer "bit crusher"
     a2     Decimator a2, kdecimatorBitDepth, sr
          printks  "bitrate = %d, ", 3, kdecimatorBitDepth
          printks  "with samplerate = %d\\n", 3, sr
   endif
 
+  if kharmonyEnabled == 1 then    ; if the box is ticked then enable effect
+  ; Analyze audio input and generate harmonizing voices in synchrony
+    a1wet harmon a1, kharmonyEstimFreq, kmaxvar, kharmonyEstimFreq*.5,  \
+            kharmonyEstimFreq*4, imode, iminfrq, iprd
+    a2wet harmon a2, kharmonyEstimFreq, kmaxvar, kharmonyEstimFreq*.5,  \
+            kharmonyEstimFreq*4, imode, iminfrq, iprd
+
+    a1 = (a1 + a1wet) * 0.6   ; mix wet and dry audio signal
+    a2 = (a2 + a2wet) * 0.6
+  endif
 
 a1    =     a1 * kamp * 0.15  ; scaling amplitude
 a1          clip a1, 0, 0.9   ; fix clipping
