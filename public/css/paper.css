@@ -11,6 +11,10 @@ canvas[resize] {
     height: 100%;
 }
 
+canvas {
+    background-color: black;
+}
+
 #loading {
     position: fixed;
     height: 100%;
