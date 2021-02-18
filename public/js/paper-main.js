@@ -35,7 +35,7 @@ for (var i = 0; i < effectsParamsArray.length; i++) {
 	var effectCircle = new Shape.Circle({
 		center: ballPositions[i],
 		radius: 50,
-		fillColor: "maroon"
+		fillColor: "Chocolate"
 	});
 	effectCircle.data.effectParam = effectsParamsArray[i];
 	effectCircle.data.effectName = effectsNameArray[i];
@@ -53,7 +53,7 @@ var instrumentCircles = new Group();
 
 var selectedCircle;
 
-var instrumentColors = ["yellow", "red", "green", "purple", "magenta"];
+var instrumentColors = ["Gold", "Teal", "Red", "DarkGreen", "DarkMagenta"];
 
 for (i=0; i<numberOfInstruments; i++) {
 	var currentCircle = new Shape.Circle({
@@ -127,8 +127,8 @@ function generateConnections() {
 
 function SelectCircle(circleToSelect) {
 	selectedCircle = circleToSelect;
-	selectedCircle.strokeColor = 'white';
-	selectedCircle.strokeWidth = 3;
+	selectedCircle.strokeColor = 'Azure';
+	selectedCircle.strokeWidth = 1;
 	ignoreMouseDown = true;
 }
 
