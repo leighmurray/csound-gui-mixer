@@ -2,8 +2,13 @@ var numberOfInstruments = 5;
 
 mixer = new Mixer(numberOfInstruments);
 
+function fadeOutLoadingScreen () {
+	document.getElementById("loading").classList.add("fade-out");;
+}
+
 window.moduleDidLoad = function () {
 	initialiseMixer();
+	fadeOutLoadingScreen();
 }
 
 // Ported from original Metaball script by SATO Hiroyuki
@@ -12,8 +17,8 @@ project.currentStyle = {
 	fillColor: 'black'
 };
 
-var ballPositions = [[455, 329], [810, 273], [686, 563],
-	[217, 659], [684, 926]];
+var ballPositions = [[455, 229], [810, 173], [686, 463],
+	[217, 559], [684, 926]];
 
 var handle_len_rate = 2.4;
 var effectCircles = new Group();
@@ -48,7 +53,7 @@ var selectedCircle;
 
 for (i=0; i<numberOfInstruments; i++) {
 	var currentCircle = new Shape.Circle({
-		center: [1200, 300 + i*100],
+		center: [1200, 170 + i*100],
  		radius: 10,
 		fillColor: "yellow",
 		strokeColor: "black",
@@ -184,7 +189,6 @@ function getVector(radians, length) {
 }
 
 document.getElementById("canvas").addEventListener('wheel', function (event) {
-	console.log("scrolling");
 	if (selectedCircle && selectedCircle.isDescendant(instrumentCircles)) {
 		var scale = event.deltaY * -0.1;
 		console.log(scale);

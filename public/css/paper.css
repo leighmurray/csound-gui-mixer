@@ -10,3 +10,18 @@ canvas[resize] {
     width: 100%;
     height: 100%;
 }
+
+#loading {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+.fade-out {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 2s, opacity 2s linear;
+}
