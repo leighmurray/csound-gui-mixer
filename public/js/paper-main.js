@@ -63,13 +63,11 @@ for (i=0; i<numberOfInstruments; i++) {
 		center: [1200, 170 + i*100],
  		radius: 10,
 		fillColor: instrumentColors[i],
-		//strokeColor: "black"
-		//strokeWidth: 2,
 		blendMode: "hue"
 	});
 
 	currentCircle.data.instrumentNumber = i+1;
-	//currentCircle.fillColor.hue *= i;
+
 	currentCircle.onMouseDown = function (event) {
 		if (selectedCircle == this) {
 			DeselectCircle();
@@ -139,8 +137,10 @@ function SelectCircle(circleToSelect) {
 }
 
 function DeselectCircle() {
-	selectedCircle.strokeWidth = 0;
-	selectedCircle = null;
+	if (selectedCircle) {
+		selectedCircle.strokeWidth = 0;
+		selectedCircle = null;
+	}
 }
 
 // ---------------------------------------------
