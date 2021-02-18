@@ -43,6 +43,9 @@ for (var i = 0; i < effectsParamsArray.length; i++) {
 		if (selectedCircle == this) {
 			DeselectCircle();
 		} else {
+			if (selectedCircle) {
+				DeselectCircle();
+			}
 			SelectCircle(this);
 		}
 	};
@@ -71,6 +74,9 @@ for (i=0; i<numberOfInstruments; i++) {
 		if (selectedCircle == this) {
 			DeselectCircle();
 		} else {
+			if (selectedCircle) {
+				DeselectCircle();
+			}
 			SelectCircle(this);
 		}
 	};
