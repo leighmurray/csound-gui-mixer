@@ -273,6 +273,7 @@ function onFrame (event) {
 function onKeyDown(event) {
 	if (event.key == 'space') {
 		document.getElementById('legend').classList.toggle('hidden');
+		document.getElementById('console').classList.toggle('hidden');
 	}
 
 	if (selectedCircle) {
