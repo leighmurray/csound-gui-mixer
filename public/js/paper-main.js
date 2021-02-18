@@ -323,16 +323,16 @@ function onKeyDown(event) {
 		}
 		if (event.key == "f") {
 			console.log("increase speed");
-			selectedCircle.data.speed += 1;
-			if (selectedCircle.data.speed > 20) {
-				selectedCircle.data.speed = 20;
+			selectedCircle.data.speed += 0.2;
+			if (selectedCircle.data.speed > 5) {
+				selectedCircle.data.speed = 5;
 			}
 		}
 		if (event.key == "s") {
 			console.log("decrease speed");
-			selectedCircle.data.speed -= 1;
-			if (selectedCircle.data.speed < 1) {
-				selectedCircle.data.speed = 1;
+			selectedCircle.data.speed -= 0.2;
+			if (selectedCircle.data.speed < 0.2) {
+				selectedCircle.data.speed = 0.2;
 			}
 		}
 	}
