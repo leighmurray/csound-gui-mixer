@@ -10,9 +10,22 @@ ksmps 	= 	32
 nchnls 	= 	2
 0dbfs   =   1   ; the amplitude range is 0/1
 
-ilastInstNumber = 5 ;number of called instances
+  opcode Decimator, a, akk	;UDO Sample rate / Bit depth reducer
+  ;see http://www.csounds.com/udo/displayOpcode.php?opcode_id=73
+         setksmps   1
+ain, kbit, ksrate xin
 
-loop:
+kbits    =        2^kbit                ;bit depth (1 to 16)
+kfold    =        (sr/ksrate)           ;sample rate
+kin      downsamp ain                   ;convert to kr
+kin      =        (kin+0dbfs)           ;add DC to avoid (-)
+kin      =        kin*(kbits/(0dbfs*2)) ;scale signal level
+kin      =        int(kin)              ;quantise
+aout     upsamp   kin                   ;convert to sr
+aout     =        aout*(2/kbits)-0dbfs  ;rescale and remove DC
+a0ut     fold     aout, kfold           ;resample
+         xout     a0ut
+  endop
 
 instr 1, 2, 3, 4, 5
 indx = p1
@@ -37,6 +50,9 @@ kresonatorFreq chnget SresonatorFreqChannel
 SfeedbackRatio sprintf "feedbackRatio%i", indx
 kfeedbackRatio chnget SfeedbackRatio
 
+SdecimatorBitDepth sprintf "decimatorBitDepth%i", indx
+kdecimatorBitDepth chnget SdecimatorBitDepth
+
 SresonatorEnabled sprintf "resonatorEnabled%i", indx
 kresonatorEnabled chnget SresonatorEnabled
 
@@ -48,6 +64,9 @@ kcutoffEnabled chnget ScutoffEnabled
 
 SfeedbackEnabled sprintf "feedbackEnabled%i", indx
 kfeedbackEnabled chnget SfeedbackEnabled
+
+SdecimatorEnabled sprintf "decimatorEnabled%i", indx
+kdecimatorEnabled chnget SdecimatorEnabled
 
 ; read audio from disk using diskin2 opcode
 StrackName sprintf "track0%i.wav", indx
@@ -71,7 +90,6 @@ a1, a2      diskin2  StrackName, kSpeed, iSkip, iLoop
 
   if kfeedbackEnabled == 1 then    ; if the box is ticked then enable effect
   ; create a delay buffer with a feedback ratio (user controlled)
-    ;ifeedback   =        0.7                    ; feedback ratio
     abufferOut1 delayr   0.1                    ; read audio from end of buffer
     abufferOut2 delayr   0.1
         delayw   a1 + (abufferOut1*kfeedbackRatio) ; write audio into buffer (mix in feedback signal)
@@ -79,6 +97,14 @@ a1, a2      diskin2  StrackName, kSpeed, iSkip, iLoop
     a1 = a1 + (abufferOut1*0.4)
     a2 = a2 + (abufferOut2*0.4)
   endif
+
+  if kdecimatorEnabled == 1 then    ; if the box is ticked then enable effect
+    a1     Decimator a1, kdecimatorBitDepth, sr
+    a2     Decimator a2, kdecimatorBitDepth, sr
+         printks  "bitrate = %d, ", 3, kdecimatorBitDepth
+         printks  "with samplerate = %d\\n", 3, sr
+  endif
+
 
 a1    =     a1 * kamp * 0.15  ; scaling amplitude
 a1          clip a1, 0, 0.9   ; fix clipping

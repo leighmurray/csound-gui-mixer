@@ -56,6 +56,7 @@ class Track {
         this.effects.push(new Effect(this.trackNumber, 'reverb', 'reverb', 0, 5, 0, false));
         this.effects.push(new Effect(this.trackNumber, 'resonator', 'resonatorFreq', 20, 1000, 20, false));
         this.effects.push(new Effect(this.trackNumber, 'feedback', 'feedbackRatio', 0, 0.9, 0.7, false));
+        this.effects.push(new Effect(this.trackNumber, 'decimator', 'decimatorBitDepth', 8, 2, 8, false));
     }
 
     Load () {

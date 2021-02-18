@@ -10,8 +10,8 @@ function moduleDidLoad() {
 function attachListeners() {
     document.getElementById('playButton').addEventListener('click', togglePlay);
     for (var i=1; i<=5; i++) {
-        var sliders = new Array("amp", "cf", "reverb", "resonatorFreq", "feedbackRatio");
-        var checkboxes = new Array("resonatorEnabled", "reverbEnabled", "cutoffEnabled", "feedbackEnabled");
+        var sliders = new Array("amp", "cf", "reverb", "resonatorFreq", "feedbackRatio", "decimatorBitDepth");
+        var checkboxes = new Array("resonatorEnabled", "reverbEnabled", "cutoffEnabled", "feedbackEnabled", "decimatorEnabled");
         sliders.forEach(function (sliderName) {
             var slider = document.getElementById(sliderName + i);
             slider.addEventListener("input", SetSliderParam);
